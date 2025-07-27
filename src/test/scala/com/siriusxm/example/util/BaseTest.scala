@@ -1,6 +1,6 @@
 package com.siriusxm.example.util
 
-import cats.effect.{IO, Ref}
+import cats.effect.IO
 import com.siriusxm.example.cart.clients.HttpClientImpl
 import com.siriusxm.example.cart.errors.HttpClientErrors.{EntityNotFound, ParsingError, ResponseError}
 import com.siriusxm.example.cart.models.{Cart, Item, Product}
