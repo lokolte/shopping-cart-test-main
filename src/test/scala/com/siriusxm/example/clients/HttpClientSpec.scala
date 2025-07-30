@@ -10,6 +10,12 @@ object HttpClientSpec extends SimpleIOSuite with BaseTest {
     } yield expect(result == cheeriosResult)
   }
 
+  test("Fail when fetch product with an invalid field value") {
+    for {
+      result <- httpClient.getProduct("invalid")
+    } yield expect(result.left.map(_.message) == invalidResult.left.map(_.message))
+  }
+
   test("Fail when fetch product with an invalid field name") {
     for {
       result <- httpClient.getProduct("parseerror")

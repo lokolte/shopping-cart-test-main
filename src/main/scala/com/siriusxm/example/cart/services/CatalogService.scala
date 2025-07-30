@@ -3,7 +3,7 @@ package com.siriusxm.example.cart.services
 import cats.effect.Async
 import cats.implicits.{catsSyntaxOptionId, toFunctorOps, toTraverseOps}
 import com.siriusxm.example.cart.clients.HttpClient
-import com.siriusxm.example.cart.errors.HttpClientErrors.{ClientError, EntityNotFound, ParsingError, ResponseError}
+import com.siriusxm.example.cart.errors.HttpClientErrors.{ClientError, EntityNotFound, ParsingError, ResponseError, ValidationError}
 import com.siriusxm.example.cart.models.{Catalog, Product}
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -23,6 +23,9 @@ class CatalogServiceImpl[F[_]: Async] private(_httpClient: HttpClient[F]) extend
         case Left(error) => error match {
           case nf: EntityNotFound =>
             logger.warn(nf.message)
+            None
+          case ve: ValidationError =>
+            logger.error(s"There was a validation error: ${ve.message}")
             None
           case pe: ParsingError =>
             logger.error(s"There was a parse error: ${pe.message}")

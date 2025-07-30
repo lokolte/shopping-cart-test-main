@@ -1,7 +1,7 @@
 package com.siriusxm.example.services
 
 import cats.effect.{IO, Ref}
-import com.siriusxm.example.cart.models.{Cart, Item}
+import com.siriusxm.example.cart.models.{Amount, Cart, Item}
 import com.siriusxm.example.cart.services.CartServiceImpl
 import com.siriusxm.example.util.BaseTest
 import weaver.SimpleIOSuite
@@ -12,12 +12,13 @@ object CartServiceSpec extends SimpleIOSuite with BaseTest {
       refCart <- Ref.of[IO, Cart](Cart(Set[Item]()))
       cartService = CartServiceImpl[IO](refCart)
       catalog <- catalogService.getCatalog(itemsOnCatalog)
-      _ <- cartService.addItem(Item(1, catalog.items.head))
+      cornflakes = catalog.items.head
+      _ <- cartService.addItem(Item.unsafeApply(Amount.unsafeApply(1), cornflakes))
       state1 <- cartService.getState
-      _ <- cartService.addItem(Item(1, catalog.items.head))
+      _ <- cartService.addItem(Item.unsafeApply(Amount.unsafeApply(1), cornflakes))
       state2 <- cartService.getState
-      weetabix = catalog.items.filter(_.name == "Weetabix").head
-      _ <- cartService.addItem(Item(1, weetabix))
+      weetabix = catalog.items.filter(_.name.value == "Weetabix").head
+      _ <- cartService.addItem(Item.unsafeApply(Amount.unsafeApply(1), weetabix))
       state3 <- cartService.getState
       subtotal <- cartService.subtotal
       totalTax <- cartService.totalTax
@@ -36,10 +37,11 @@ object CartServiceSpec extends SimpleIOSuite with BaseTest {
       refCart <- Ref.of[IO, Cart](Cart(Set[Item]()))
       cartService = CartServiceImpl[IO](refCart)
       catalog <- catalogService.getCatalog(itemsOnCatalog)
-      weetabix = catalog.items.filter(_.name == "Weetabix").head
-      _ <- cartService.addItem(Item(1, catalog.items.head))
+      weetabix = catalog.items.filter(_.name.value == "Weetabix").head
+      cornflakes = catalog.items.head
+      _ <- cartService.addItem(Item.unsafeApply(Amount.unsafeApply(1), cornflakes))
       state1 <- cartService.getState
-      _ <- cartService.addItems(Set(Item(1, catalog.items.head), Item(1, weetabix)))
+      _ <- cartService.addItems(Set(Item.unsafeApply(Amount.unsafeApply(1), cornflakes), Item.unsafeApply(Amount.unsafeApply(1), weetabix)))
       state2 <- cartService.getState
       subtotal <- cartService.subtotal
       totalTax <- cartService.totalTax

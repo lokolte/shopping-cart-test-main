@@ -22,6 +22,14 @@ object CatalogServiceSpec extends SimpleIOSuite with BaseTest {
     } yield expect(catalog.items == Seq())
   }
 
+  test("Succeed to get catalog with a product with an invalid value and validation failed") {
+    val catalogService = CatalogServiceImpl[IO](httpClient)
+
+    for {
+      catalog <- catalogService.getCatalog(Seq("invalid"))
+    } yield expect(catalog.items == Seq())
+  }
+
   test("Succeed to get catalog with a product with an invalid field") {
     val catalogService = CatalogServiceImpl[IO](httpClient)
 

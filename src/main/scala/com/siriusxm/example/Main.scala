@@ -1,7 +1,7 @@
 package com.siriusxm.example
 
 import cats.effect.{ExitCode, IO, IOApp, Ref}
-import com.siriusxm.example.cart.models.{Cart, Catalog, Item}
+import com.siriusxm.example.cart.models.{Amount, Cart, Catalog, Item}
 import com.siriusxm.example.cart.clients.HttpClientImpl
 import com.siriusxm.example.cart.services.{CartServiceImpl, CatalogServiceImpl}
 
@@ -23,12 +23,12 @@ object Main extends IOApp.Simple {
         refCart <- Ref.of[IO, Cart](Cart(Set[Item]()))
         cartService = CartServiceImpl[IO](refCart)
 
-        _ <- cartService.addItem(Item(1, catalog.items.head))
+        _ <- cartService.addItem(Item.unsafeApply(Amount.unsafeApply(1), catalog.items.head))
         _ <- cartService.getState.map(println)
-        _ <- cartService.addItem(Item(1, catalog.items.head))
+        _ <- cartService.addItem(Item.unsafeApply(Amount.unsafeApply(1), catalog.items.head))
         _ <- cartService.getState.map(println)
         weetabix = catalog.items.filter(_.name == "Weetabix").head
-        _ <- cartService.addItem(Item(1, weetabix))
+        _ <- cartService.addItem(Item.unsafeApply(Amount.unsafeApply(1), weetabix))
 
         _ <- cartService.getState.map(println)
         subtotal <- cartService.subtotal
